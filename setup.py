@@ -7,7 +7,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="optimizer-ratings",
-    version="0.0.2",
+    version="0.0.3",
     description="Time series models represented as pure functions with SKATER convention.",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -25,9 +25,4 @@ setup(
     tests_require=['pytest'],
     include_package_data=True,
     install_requires=["wheel","pathlib","numpy>=1.16.5","timemachines","pytest","microprediction"],
-    entry_points={
-        "console_scripts": [
-            "optimizer-ratings=optimizer-ratings.__main__:main",
-        ]
-    },
 )

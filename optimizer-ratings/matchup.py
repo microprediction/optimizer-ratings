@@ -36,20 +36,23 @@ ensure_dir(MATCHUPS_DIR)
 def random_optimizer_matchup():
     """ Field test two optimizers and assign a win/loss/draw """
 
-    white,black = np.random.choice(OPTIMIZERS,2,replace=False)
+    good = ['ax','pysot','optuna','hyperopt']
+    GOOD_OPTIMIZERS = [o for o in OPTIMIZERS if any(g in o.__name__ for g in good)]
+
+    white,black = np.random.choice(GOOD_OPTIMIZERS,2,replace=False)
     f = random.choice(SKATERS)
     print('Skater is '+f.__name__)
     evaluator = random.choice(EVALUATORS)
     names = mw.get_stream_names()
     n_lagged = 0
-    n = 2000
+    n = 200
     while n_lagged<n:
         name = random.choice(names)
         ys = list(reversed(mw.get_lagged_values(name=name, count=2000)))
         n_lagged = len(ys)
 
-    n_trials = random.choice([20,40,80])
-    n_dim = random.choice([2,3])
+    n_trials = random.choice([20])
+    n_dim = random.choice([3])
     n_burn = min(n-50,100)
 
     # White plays
@@ -102,7 +105,7 @@ def random_optimizer_matchup():
     else:
         points = None
 
-    report.update({'points':points,'valid_white':valid_white,'valid_black':valid_black,'white_elapsed':white_elapsed,'black_elapsed':black_elapsed})
+    report.update({'points':points,'valid_white':valid_white,'valid_black':valid_black,'white_elapsed':white_elapsed,'black_elapsed':black_elapsed,'count_black':count_black})
 
     return report
 
@@ -116,17 +119,22 @@ def random_optimizer_matchup_and_elo_update():
     names = mw.get_stream_names()
     if len(names)>100:
         for name in [white_name,black_name]:
-            if white_name not in names:
-                mw.set(name=name,value=2000)
+            if name not in names:
+                print('New rating for ' + name)
+                pprint( mw.set(name=name,value=2000) )
     else:
         raise Exception('Cannot get streams')
 
     white_elo = float(mw.get_current_value(name=white_name))
     black_elo = float(mw.get_current_value(name=black_name))
+    white_previous = len(mw.get_lagged_values(name=white_name))
+    black_previous = len(mw.get_lagged_values(name=black_name))
     d = black_elo-white_elo
     e = elo_expected(d=d,f=400)
     w = report['points']-e   # White's innovation
-    K = 16
+    white_K = 16. if white_previous > 10 else 25.
+    black_K = 16. if black_previous > 10 else 25.
+    K = min(white_K, black_K)
     white_new_elo = white_elo + K*w
     black_new_elo = black_elo - K*w
 
@@ -141,7 +149,7 @@ def random_optimizer_matchup_and_elo_update():
 
 
 if __name__=='__main__':
-    report=random_optimizer_matchup()
+    report=random_optimizer_matchup_and_elo_update()
     pprint(report)
 
 
