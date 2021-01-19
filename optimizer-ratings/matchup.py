@@ -127,8 +127,8 @@ def random_optimizer_matchup_and_elo_update():
 
     white_elo = float(mw.get_current_value(name=white_name))
     black_elo = float(mw.get_current_value(name=black_name))
-    white_previous = len(mw.get_lagged_values(name=white_name))
-    black_previous = len(mw.get_lagged_values(name=black_name))
+    white_previous = len(mw.get_lagged_values(name=white_name) or [])
+    black_previous = len(mw.get_lagged_values(name=black_name) or [])
     d = black_elo-white_elo
     e = elo_expected(d=d,f=400)
     w = report['points']-e   # White's innovation
