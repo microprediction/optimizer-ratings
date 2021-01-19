@@ -1,0 +1,1 @@
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/microprediction/optimizer-ratings/master/run.sh)"
