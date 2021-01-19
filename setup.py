@@ -8,7 +8,7 @@ README = (HERE / "README.md").read_text()
 setup(
     name="optimizer-ratings",
     version="0.0.3",
-    description="Time series models represented as pure functions with SKATER convention.",
+    description="Compares performance of optimizers used for time series model hyper-param optimization",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/microprediction/optimizer-ratings",
